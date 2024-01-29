@@ -37,9 +37,7 @@ The following scripts all allow for data acquisition using the Opal Kelly Imager
 # Helper libraries
 These consist of classes or functions that support the acquisition and processing of scripts. These do not have to be run individually.
 
-1. **fpga.py** Helper functions for opal-kelly FPGA pin assignments, settings loading, and acquisition parameters setup.
-2. **ok.py** Opal Kelly specific functions
-3. **geegah_hp.py** Helper functions for image acquisition and post-processing
+1. **geegah_hp.py** Helper functions for image acquisition and post-processing
 
 # Other files for driver support (included)
 
