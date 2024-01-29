@@ -39,17 +39,12 @@ These consist of classes or functions that support the acquisition and processin
 
 1. **geegah_hp.py** Helper functions for image acquisition and post-processing
 
-# Other files for driver support (included)
-
-1. okFrontPanel.dll
-2. _ok.pyd
-3. xem7305_GG222.bit
 
 # Getting started: 
 
 **Clone the repository**
 ```bash
-git clone git@github.com:Geegah-Inc/Geegah_OK.git
+git clone git@github.com:Geegah-Inc/Geegah_RP2040.git
 ```
 
 **Or, directly download the zip**
@@ -62,8 +57,7 @@ All the scripts have been divided into the following sections:
 1) Importing modules
 2) Creating a directory and sub-folders to save raw and processed images
 3) Changing parameters of interest
-4) Finding and initializing the board
-5) Reloading the board after first initialization
+4) Finding and initializing the board/connection
 6) Acquiring air frames/background frames
 7) Acquiring main sample frames
 8) Plotting desired acoustic parameters
