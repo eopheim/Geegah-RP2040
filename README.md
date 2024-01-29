@@ -12,7 +12,6 @@ These scripts allow users to control the following features of the GHz ultrasoni
 # Prerequisites
 Before you use any of the acquisition of post-processing scripts, ensure you have the following on your computer:
 1. Python 3. x installed
-2. Opal Kelly FPGA driver: [Download link](https://pins.opalkelly.com/downloads/572/download?category_id=27)
 3. Python libraries for operations: sys, os, time, math, NumPy
 4. Python libraries for image generation, visualization, and analysis: matplotlib, OpenCV (video generation and analysis)
 
@@ -29,8 +28,9 @@ pip install opencv-python
 # Image acquisition and processing scripts
 The following scripts all allow for data acquisition using the Opal Kelly Imager. Each acquisition script has a section that allows users to load the raw data to generate images and compute different acoustic parameters.
 
-1. **Geegah_OK_Imaging.py**: Acquisition of N number of frames with an option to visualize them in real time. It also allows the user to select the operating pixels from 1 x 1 to 128 x 128 or 256 x 256 (for MEG4). This operates at a fixed frequency and echo acquisition timing.
-2. **Geegah_OK_FrequencySweep.py**: Acquisition of images at a range of frequencies (1.5 - 2.0 GHz, with a step as low as 0.01 MHz). Allows capturing N frames (128 x 128 or smaller ROIs) at a fixed acquisition echo timing. 
+1. **Geegah_RP2040_Imaging.py**: Acquisition of N number of frames with an option to visualize them in real-time for the entire 128 x 128 pixels. This operates at a fixed frequency and echo acquisition timing.
+2. **Geegah_RP2040_FrequencySweep.py**: Acquisition of images at a range of frequencies (1.5 - 2.0 GHz, with a step as low as 0.01 MHz). Allows capturing N frames at a fixed acquisition echo timing.
+3. **Geegah_RP2040_SNH.py**: Acquisition of images at different echo timings with a step of 5 ns. This allows capturing N frames at a fixed frequency. 
 
 
 
