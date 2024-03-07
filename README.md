@@ -69,6 +69,7 @@ You simply have to run this once to load the necessary helper functions and Pyth
 ```python
 #import modules
 
+```python
 import geegah_hp
 import RPi.GPIO as GPIO
 import matplotlib.pyplot as plt
