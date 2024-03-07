@@ -87,13 +87,13 @@ foldername = "SampleExperiment4"
 path = "C:/Users/anujb/Downloads"
 
 savedirname = os.path.join(path, foldername, "")
-```
+```python
 
 **3. Changing parameters of interest**<br />
 This is the section where you need to assign correct values to the parameter that you might want to change for the acquisition
 
-```python
 
+```python
 liveplot = True #boolean for plotting images real-time, True or False
 frequency = 1853.5 #Pulse frequency in MHz, with resolution of 0.1 MHz
 
@@ -102,7 +102,8 @@ frequency = 1853.5 #Pulse frequency in MHz, with resolution of 0.1 MHz
 liveplot = True #boolean for plotting images real-time, True or False, set this as True for live plotting
 frequency = 1853 #Pulse frequency in MHz, with a resolution of 0.1 MHz
 
-```
+```python
+
 Before proceeding, please ensure the Geegah Imager is powered on and connected to the PC via USB A/C.  <br />
 
 **4. Initializing the board connection and settings**<br />
@@ -126,15 +127,17 @@ GPIO_NUM_DAC_CE0B =22 # Dedicated DAC for
 pinDict_Main = dict(gpio_num_PINNO_TEST = GPIO_PINNO_TEST, 
                     gpio_num_DAC_CE0B = GPIO_NUM_DAC_CE0B,
                     gpio_num_VCO_LE = GPIO_NUM_VCO_LE);
-...
-...
 
-```python
 ...
 ...
 ...
 #code continues#
 ```
+...
+...
+
+```python
+
 **5. Dummy frames after board configuration** <br />
 This function acquires N number of frames to clear out the buffers so that the frames are acquired in the configured settings. There are 2 buffers, each storing total bits of I,Q (128x128 pixels), which are automatically filled once the board is connected. When any setting is changed, these buffers need to be cleared out before the frame representing the correct signal fills them up which is transferred to RPi4/PC during frame acquisition. Therefore, at least 2 frames need to be acquired and discarded after switching any timing-related, frequency, or board settings. This section takes care of that where N_dummy represents the number of dummy frames to discard. 
 
