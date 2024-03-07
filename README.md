@@ -11,9 +11,20 @@ These scripts allow users to control the following features of the GHz ultrasoni
 
 # Prerequisites
 Before you use any of the acquisition of post-processing scripts, ensure you have the following on your computer:
-1. Python 3. x installed
+1. Python 3. x installed'
+2. Python library specific to RP2040 connections: spidev, RPi.GPIO
 3. Python libraries for operations: sys, os, time, math, NumPy
 4. Python libraries for image generation, visualization, and analysis: matplotlib, OpenCV (video generation and analysis)
+
+Install spidev and RPi.GPIO
+
+```bash
+python -m pip install spidev
+```
+
+```bash
+pip install RPi.GPIO
+```
 
 An example of installing Matplotlib and OpenCV module using pip.
 
