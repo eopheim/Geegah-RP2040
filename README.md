@@ -19,7 +19,7 @@ Before you use any of the acquisition of post-processing scripts, ensure you hav
 Install spidev and RPi.GPIO
 
 ```bash
-python -m pip install spidev
+python pip install spidev
 ```
 
 ```bash
