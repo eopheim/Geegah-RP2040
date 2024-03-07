@@ -76,7 +76,7 @@ import os
 import numpy as np
 import time
 import serial
-```
+```python
 
 **2. Directory assignment** <br />
 Change the **foldernam**e to represent the main folder where all the sub-folders will be created, and the raw data files will be saved. <br />
