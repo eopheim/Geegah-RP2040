@@ -28,10 +28,10 @@ pip install opencv-python
 # Image acquisition and processing scripts
 The following scripts all allow for data acquisition using the Opal Kelly Imager. Each acquisition script has a section that allows users to load the raw data to generate images and compute different acoustic parameters.
 
-1. **Geegah_RP2040_Imaging.py**: Acquisition of N number of frames with an option to visualize them in real-time for the entire 128 x 128 pixels. This operates at a fixed frequency and echo acquisition timing.
-2. **Geegah_RP2040_FrequencySweep.py**: Acquisition of images at a range of frequencies (1.5 - 2.0 GHz, with a step as low as 0.01 MHz). Allows capturing N frames at a fixed acquisition echo timing.
-3. **Geegah_RP2040_SNH.py**: Acquisition of images at different echo timings with a step of 5 ns. This allows capturing N frames at a fixed frequency. 
-
+1. **Geegah_RP2040_Liveimaging.py**: Acquisition of N number of frames with an option to visualize them in real-time for the entire 128 x 128 pixels. This operates at a fixed frequency and echo acquisition timing.
+2.  **Geegah_RP2040_Liveimaging_withNoEcho.py**: Acquisition of N number of frames with an option to visualize them in real-time for the entire 128 x 128 pixels. This operates at a fixed frequency and echo acquisition timing. This also includes acquiring baseline acquisition at a later time when the echo dies off which can be used to calculate the true signal change of the samples yielding more accurate Acoustic Impedance.
+3. **Geegah_RP2040_FrequencySweep.py**: Acquisition of images at a range of frequencies (1.5 - 2.0 GHz, with a step as low as 0.01 MHz). Allows capturing N frames at a fixed acquisition echo timing.
+4. **Geegah_RP2040_SNH.py**: Acquisition of images at different echo timings with a step of 5 ns. This allows capturing N frames at a fixed frequency. 
 
 
 # Helper libraries
@@ -44,12 +44,12 @@ These consist of classes or functions that support the acquisition and processin
 
 **Clone the repository**
 ```bash
-git clone git@github.com:Geegah-Inc/Geegah_RP2040.git
+git clone git@github.com:Geegah-Inc/Geegah-RP2040.git
 ```
 
 **Or, directly download the zip**
 Click on 1) **Code** drop-down menu and click **Download ZIP** 
-![alt text](https://github.com/Geegah-Inc/Geegah_OK/blob/main/ZIP_download.png)
+![alt text](https://github.com/Geegah-Inc/Geegah-RP2040/blob/main/ZIP_download.png)
 
 **Usage Example**
 All the scripts have been divided into the following sections:
@@ -58,6 +58,7 @@ All the scripts have been divided into the following sections:
 2) Creating a directory and sub-folders to save raw and processed images
 3) Changing parameters of interest
 4) Finding and initializing the board/connection
+5) Dummy frames
 6) Acquiring air frames/background frames
 7) Acquiring main sample frames
 8) Plotting desired acoustic parameters
@@ -66,14 +67,15 @@ All the scripts have been divided into the following sections:
 **1. Importing Modules**<br />
 You simply have to run this once to load the necessary helper functions and Python libraries
 ```python
-import fpga 
-import sys
-import numpy as np
-import matplotlib.pyplot as plt
+#import modules
+
 import geegah_hp
-import time
-import cv2 #optional for video generation
+import RPi.GPIO as GPIO
+import matplotlib.pyplot as plt
 import os
+import numpy as np
+import time
+import serial
 ```
 
 **2. Directory assignment** <br />
@@ -96,50 +98,48 @@ liveplot = True #boolean for plotting images real-time, True or False
 frequency = 1853.5 #Pulse frequency in MHz, with resolution of 0.1 MHz
 
 #Selection of firing/receiving pixels, ROI 
-col_min = 0 #integer, 0<col_min<127
-col_max = 127 #integer, 0<col_max<127
-row_min = 0 #integer, 0<row_min<127
-row_max = 127 #integer, 0<row_max<127
 
-row_no = row_max - row_min
-col_no = col_max - col_min
-roi_param = [col_min, col_max, row_min, row_max]
-num_Frames = 100 #Number of frames to acquire for sample, integer, num_Frames > 0
+liveplot = True #boolean for plotting images real-time, True or False, set this as True for live plotting
+frequency = 1853 #Pulse frequency in MHz, with a resolution of 0.1 MHz
 
 ```
-Please ensure the Geegah Imager is powered on and connected to the PC via USB A/C before proceeding.  <br />
+Before proceeding, please ensure the Geegah Imager is powered on and connected to the PC via USB A/C.  <br />
 
-**4. Finding and initializing the board**<br />
-The first section of the code sets up the connection with the FPGA board. If the board is not connected, or if the driver is missing, an error message appears. 
-
-```python
-xem = fpga.fpga()
-board_name = xem.BoardName()
-if board_name != "XEM7305":
-    print("Problem: board name = " + board_name)  
-    sys.exit()
-print("Board: " + xem.di.deviceID + " " + xem.di.serialNumber)
-```
-The second part of the code is loading the DAC in the board, which prepares individual pixels for imaging. It further loads other timing and pulse settings as well. <br /> 
-You do not have to change anything here. You also only need to run this section once, as it takes approximately 30 seconds - 1.5 minutes to load all the pixels (128 x 128) <br />
-Re-run this if you restarted the console or the board connection was interrupted mid-acquisition. 
+**4. Initializing the board connection and settings**<br />
+This section ensures the board is connected, and configures the relevant timing, DAC, and frequency settings to the connected board. 
 
 ```python
-#bit file to use (before DAC changes)
-bit_file_name = "xem7305.bit"
-xem.Configure(bit_file_name) # use older bit file
-print("Version: " + xem.Version() + " serial number " + str(xem.SerialNumber()))
-print("Sys clock = %8.4f MHz" % xem.SysclkMHz())
+#BOARD SETUP AND INITIALIZATION
+
+
+GPIO_PINNO_TEST = 27
+# VCO, ad4351 PINS, SPI0, DEV0
+GPIO_NUM_VCO_LE = 7  #SPI0_CE1 from Rpi
+
+# SPI DAC new device, Configured on SPI0 with dedicated GPIO for C#
+GPIO_NUM_DAC_MOSI = 10
+GPIO_NUM_DAC_MISO = 9
+GPIO_NUM_DAC_CLK = 11
+GPIO_NUM_DAC_CE = 8 # STANDARD SPI0, dev0 CE, not used for DAC
+GPIO_NUM_DAC_CE0B =22 # Dedicated DAC for 
+
+pinDict_Main = dict(gpio_num_PINNO_TEST = GPIO_PINNO_TEST, 
+                    gpio_num_DAC_CE0B = GPIO_NUM_DAC_CE0B,
+                    gpio_num_VCO_LE = GPIO_NUM_VCO_LE);
+...
+...
+
+```python
 ...
 ...
 ...
 #code continues#
 ```
-**5. Reloading the board after first initialization** <br />
-This function can be run to re-initialize the board once the FPGA setup code has already been run.
+**5. Dummy frames after board configuration** <br />
+This function acquires N number of frames to clear out the buffers so that the frames are acquired in the configured settings. There are 2 buffers, each storing total bits of I,Q (128x128 pixels), which are automatically filled once the board is connected. When any setting is changed, these buffers need to be cleared out before the frame representing the correct signal fills them up which is transferred to RPi4/PC during frame acquisition. Therefore, at least 2 frames need to be acquired and discarded after switching any timing-related, frequency, or board settings. This section takes care of that where N_dummy represents the number of dummy frames to discard. 
 
 ```python
-geegah_hp.reload_board(xem, frequency, roi_param)
+geegah_hp.dummy_frames(spi_obj_pico, n = N_dummy)
 ```
 
 Please ensure the chip surface is cleaned properly before running this section.
@@ -149,15 +149,21 @@ Please ensure the chip surface is cleaned properly before running this section.
 Enter the number of air frames/baseline frames to acquire for the experiment by changing  **NAIRSAMPLES** variable. 
 
 ```python
-NAIRSAMPLES = 10
-N_ZERO_PAD = len(str(NAIRSAMPLES))
-i_time = time.time()
+#%% CAPTURE BASELINE ECHO 
 
-for mycount in range(NAIRSAMPLES):
-   
-    geegah_hp.configTiming(xem,term_count,TX_SWITCH_EN_SETTINGS,PULSE_AND_SETTINGS,RX_SWITCH_EN_SETTINGS,GLOB_EN_SETTINGS,LO_CTRL_SETTINGS,ADC_CAP_SETTINGS)
-    
-    air_baseline_echo_filename = BLE_save_dir + "DATA"+str(mycount).zfill(N_ZERO_PAD)+".dat"
+
+print("\n\n\n AQUISITION OF AIR FRAMES NOW: CLEAN THE IMAGER SURFACE")
+a=input("Press Enter to proceed with air frames acquisition \n")
+
+frames = 5
+time_i = time.time()
+for jj in range(frames):
+    frames_data_nD_baseline,timeStamp_1D_baseline, flagSignatureFound_1D_baseline, bufferSignature_1D_baseline, missedBlobCount_1D = geegah_hp.read_block_singleOrMultiple_frames_at_unsynchronized_state_BIN_1Frame(spi_obj_arg = spi_obj_pico,\
+                                                                       n_bytes_block_arg=n_bytes_block_arg)
+    #write AIR ECHO DAT FILES
+    baseline_file_name = BLE_save_dir+"frame"+str(jj)+".dat"
+    geegah_hp.writeFile(baseline_file_name, frames_data_nD_baseline)
+
 ...
 ...
 ...
@@ -168,9 +174,30 @@ Enter the number of sample frames to acquire for the experiment by changing  the
 If you have enabled the plotting (liveplot = True), a plot window pops up displaying the calculated Magnitude (V) of the signal real time.
 ```python
 
-NUM_IMAGE_SAMPLES =  20
-N_ZERO_PAD_IM = len(str(NUM_IMAGE_SAMPLES))
-time_stamp = []
+numFrames = 400
+
+
+print("\n\n\n AQUISITION OF SAMPLE FRAMES NOW: PLACE THE SAMPLE NOW")
+a=input("Press Enter to proceed with sample frames acquisition \n")
+
+#initialize image window
+if liveplot == True: 
+    fig2,ax2 = plt.subplots(1)
+    fig2.set_size_inches(2,2)
+    mytitle = fig2.suptitle('Real-time Magnitude (V):  ')
+       
+    im2 = np.flipud(np.rot90(Q_AE_VOLTS,1))
+    pos201 = ax2.imshow(im2, vmin = -0.1, vmax = 0.1, interpolation = 'bilinear')
+    fig2.colorbar(pos201)
+    base_title ='Real-time Magnitude (V):  '
+
+
+time_i = time.time()
+for jj in range(numFrames):
+    #read an image
+    frames_data_nD_sample,timeStamp_1D_baseline, flagSignatureFound_1D_baseline, bufferSignature_1D_baseline, missedBlobCount_1D = geegah_hp.read_block_singleOrMultiple_frames_at_unsynchronized_state_BIN_1Frame(spi_obj_arg = spi_obj_pico,\
+                                                                           n_bytes_block_arg=n_bytes_block_arg)
+    
 ...
 ...
 ...
@@ -182,30 +209,28 @@ time_stamp = []
 ```
 
 **8. Process the images** <br />
-Enter the details for loading previously saved data: Foldername, Path to saved data, ROI col/rows min/max values, # of airframes, and # of sample frames.
+Enter the details for loading previously saved data: Foldername, Path to saved data, # of airframes, and # of sample frames.
 This will load all the echo/no-echo, I and Q values for Baseline and Sample frames and place them in their respective arrays. It will then compute the arrays for Magnitude, Phase, Reflection coefficient, and Acoustic Impedance.
 ```python
 
-foldername_PP = "SampleExperiment4"
+foldername_PP = "Test"
 path_PP = "C:/Users/anujb/Downloads"
-savedirname_PP = os.path.join(path, foldername, "")
-BLE_save_dir = savedirname_PP+'rawdata_baseline_echo/'
-BLNE_save_dir = savedirname_PP+'rawdata_baseline_no_echo/'
-rawdata_save_dir = savedirname_PP+'rawdata_echo/'
-rawdata_ne_save_dir = savedirname_PP+'rawdata_no_echo/'
-#Selection of firing/receiving pixels, ROI
-#THIS MUST MATCH WITH THE SAME VARIABLES THAT WERE USED DURING ACQUISITION
-col_min = 0 #integer, 0<col_min<127
-col_max = 127  #integer, 0<col_max<127
-row_min = 0 #integer, 0<row_min<127
-row_max = 127 #integer, 0<row_max<127
+savedirname_PP = os.path.join(path_PP, foldername_PP, "")
 
-roi_param = [col_min, col_max, row_min, row_max]
-num_AIR_Frames = 1 #Number of air/baseline frames to consider during computation
-num_SAMPLE_Frames = 20 #Number of frames to measured sample frames
+BLE_save_dir = savedirname_PP+'rawdata_baseline_echo/'
+rawdata_save_dir = savedirname_PP+'rawdata_echo/'
+
+num_AIR_Frames = 10 #Number of air/baseline frames to consider during computation
+num_SAMPLE_Frames = 100 #Number of frames to measured sample frames
 
 I_A_E, Q_A_E, I_A_NE, Q_A_NE = [],[],[],[]
-I_S_E, Q_S_E, I_S_NE, Q_S_NE = [],[],[],[]
+I_S_E, Q_S_E = [],[]
+
+#LOAD AIR DATA
+for frame in range(num_AIR_Frames):
+   
+    AE_filename = BLE_save_dir + "DATA"+str(frame)+".dat"
+  
 ...
 ...
 ...
