@@ -49,7 +49,7 @@ git clone git@github.com:Geegah-Inc/Geegah-RP2040.git
 
 **Or, directly download the zip**
 Click on 1) **Code** drop-down menu and click **Download ZIP** 
-![alt text](https://github.com/Geegah-Inc/Geegah-RP2040/blob/main/ZIP_download.png)
+![alt text](https://github.com/Geegah-Inc/Geegah_OK/blob/main/ZIP_download.png)
 
 **Usage Example**
 All the scripts have been divided into the following sections:
