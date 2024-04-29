@@ -1,7 +1,7 @@
 # Geegah RP2040 Image Acquisition
 
 # Introduction
-This repository contains Python scripts for image acquisition and processing using the Geegah ultrasonic imager with RP2040 as the micro-processor. The Geegah Imager consists of a 128 x 128 or 256 x 256 array of transducers that transmit and receive high-frequency ultrasonic waves. These scripts are tailored to enable single/multi-frequency measurements for all the pixels as well as acquiring the whole transmit/receive pulses with multiple echoes. Additionally, scripts are provided to generate images from the raw ".dat" files and further compute the acoustic parameters of the acquired data. 
+This repository contains Python scripts for image acquisition and processing using the Geegah ultrasonic imager with RP2040 as the microprocessor. These scripts must be run from RPi4. The Geegah Imager consists of a 128 x 128 or 256 x 256 array of transducers that transmit and receive high-frequency ultrasonic waves. These scripts are tailored to enable single/multi-frequency measurements for all the pixels as well as acquiring the whole transmit/receive pulses with multiple echoes. Additionally, scripts are provided to generate images from the raw ".dat" files and further compute the acoustic parameters of the acquired data. 
 
 # Features
 These scripts allow users to control the following features of the GHz ultrasonic transducers.
@@ -42,7 +42,6 @@ The following scripts all allow for data acquisition using the Opal Kelly Imager
 1. **Geegah_RP2040_Liveimaging.py**: Acquisition of N number of frames with an option to visualize them in real-time for the entire 128 x 128 pixels. This operates at a fixed frequency and echo acquisition timing.
 2.  **Geegah_RP2040_Liveimaging_withNoEcho.py**: Acquisition of N number of frames with an option to visualize them in real-time for the entire 128 x 128 pixels. This operates at a fixed frequency and echo acquisition timing. This also includes acquiring baseline acquisition at a later time when the echo dies off which can be used to calculate the true signal change of the samples yielding more accurate Acoustic Impedance.
 3. **Geegah_RP2040_FrequencySweep.py**: Acquisition of images at a range of frequencies (1.5 - 2.0 GHz, with a step as low as 0.01 MHz). Allows capturing N frames at a fixed acquisition echo timing.
-4. **Geegah_RP2040_SNH.py**: Acquisition of images at different echo timings with a step of 5 ns. This allows capturing N frames at a fixed frequency. 
 
 
 # Helper libraries
