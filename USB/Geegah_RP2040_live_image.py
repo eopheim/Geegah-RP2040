@@ -25,7 +25,7 @@ window_name = "Geegah: RP1 Imager"
 #cv2.namedWindow('I', cv2.WINDOW_AUTOSIZE | cv2.WINDOW_OPENGL)
 
 # Windows 11
-cv2.namedWindow(window_name, cv2.WINDOW_AUTOSIZE)
+cv2.namedWindow(window_name, cv2.WINDOW_KEEPRATIO)
 
 screen_width = 720
 image_width = 128
@@ -114,11 +114,12 @@ while True:
     # Calculate time remaining in loop to meet fps period, uses to try and keep consistant frame times
     wait_time_ms = (int((delay - (time.time() - start_time))*1e3))
     
-    # Skip displaying frame if time remaining is less than 1 ms
-    if wait_time_ms <= 0:
-        continue
-    
-    # wait_time_ms = 1
+    if save_video:
+        # Skip displaying frame if time remaining is less than 1 ms
+        if wait_time_ms <= 0:
+            continue
+    else:
+        wait_time_ms = 1
 
     # Display image
     cv2.imshow(window_name, combined_image)
