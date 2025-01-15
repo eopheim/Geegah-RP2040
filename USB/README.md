@@ -51,4 +51,7 @@ This provides a basic example of configuring the RP2040 imager and getting image
 
 ## RP2040 Firmware
 [RP2040_Imager.uf2](RP2040_Imager.uf2)
-RP2040 UF2 firmware file. Upload this to the RP2040 over the RP2040 USB to insure compatible firmware is used. This firmware version has been modified from the main original to allow the RP2040 USB to be disconnected. It also sets default values to Mode 1, Delay 125us, ADC1
+RP2040 UF2 firmware file. Upload this to the RP2040 over the RP2040 USB to insure compatible firmware is used. This firmware version has been modified from the main original to allow the RP2040 USB to be disconnected. It also sets default values to Mode 1, Delay 125us, ADC1.
+
+
+[Firmware source code](https://github.com/eopheim/RP2040_Imager_No_Echo)
